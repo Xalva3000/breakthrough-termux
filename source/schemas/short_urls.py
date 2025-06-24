@@ -5,8 +5,8 @@ class ShortUrlBase(BaseModel):
     target_url: str
     slug: str
 
+
 class ShortUrl(ShortUrlBase):
     """
     class ShortUrl
     """
-

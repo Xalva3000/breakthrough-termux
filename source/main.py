@@ -7,8 +7,10 @@ from fastapi import (
     status,
     Depends,
 )
-from schemas.short_url import ShortUrl
+from schemas import ShortUrl, Movie
 from fastapi.responses import RedirectResponse
+from movie_data import MOVIES_LIST
+
 
 SHORT_URLS = [
     ShortUrl(
@@ -33,6 +35,11 @@ def prefetch_short_url(slug: str):
     return url
 
 
+def prefetch_movie_data(movie_id: int):
+    movie: Movie | None = next((m for m in MOVIES_LIST if m.movie_id == movie_id))
+    return movie
+
+
 @app.get(
     "/",
     response_model=list[ShortUrl],
@@ -50,18 +57,28 @@ def read_short_urls_list():
     return SHORT_URLS
 
 
+@app.get("/movies-list")
+def get_movies_list():
+    return MOVIES_LIST
+
+
 @app.get("/r/{slug}")
 @app.get("/r/{slug}/")
-def redirect_short_url(
-    url: Annotated[
-        ShortUrl,
-        Depends(prefetch_short_url),
-    ]
-):
+def redirect_short_url(url: Annotated[ShortUrl, Depends(prefetch_short_url)]):
     if url:
         return RedirectResponse(url=url.target_url)
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND, detail=f"URL {slug!r} not found"
+    )
+
+
+@app.get("/movie/{movie_id}/")
+def get_movie_data_by_id(movie_data: Annotated[Movie, Depends(prefetch_movie_data)]):
+    if movie_data:
+        return {"movie_data": movie_data}
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=f"Movie not found. Searched id: {movie_id!r}",
     )
 
 
