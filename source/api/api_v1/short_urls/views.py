@@ -1,7 +1,7 @@
 from typing import Annotated
 from .schemas import ShortUrl
 from fastapi.responses import RedirectResponse
-from .dependencies import prefetch_short_url
+from .dependencies import prefetch_short_url, SHORT_URLS
 from fastapi import Request, HTTPException, status, Depends, APIRouter
 
 

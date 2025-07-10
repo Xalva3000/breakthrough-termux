@@ -14,18 +14,25 @@ from api.api_v1.short_urls.schemas import ShortUrl
 from api.api_v1.short_urls.dependencies import prefetch_short_url
 from typing import Annotated
 
+
+# Инициализация fastapi класса
 app = FastAPI(
     title="Breakthrough",
 )
+
+# Подключение всех роутеров
 app.include_router(api_router)
 
 
 @app.get(
     "/",
-    response_model=list[ShortUrl],
 )
-def greet(request: Request, name: str = "Alex"):
+def greet(
+    request: Request,
+    name: str = "Alex"
+):
     docs_url = request.url.replace(path="/docs")
+
     return {
         "message": f"Hello, {name}",
         "docs": str(docs_url),
@@ -35,7 +42,7 @@ def greet(request: Request, name: str = "Alex"):
 
 @app.get("/r/{slug}")
 @app.get("/r/{slug}/")
-def redirect_short_url(url: Annotated[ShortUrl, Depends(prefetch_short_url)]):
+def redirect_short_url(slug, url: Annotated[ShortUrl, Depends(prefetch_short_url)]):
     if url:
         return RedirectResponse(url=url.target_url)
     raise HTTPException(

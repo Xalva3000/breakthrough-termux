@@ -5,6 +5,8 @@ from .movies import router as router_movies
 
 router = APIRouter(prefix="/v1")
 
+# Подключение роутера к short_urls
 router.include_router(router_short_urls)
-router.include_router(router_movies)
 
+# Подключение роутера к movies
+router.include_router(router_movies)
