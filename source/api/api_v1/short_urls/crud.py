@@ -1,4 +1,4 @@
-from .schemas import ShortUrl, ShortUrlCreate
+from .schemas import ShortUrl, ShortUrlCreate, ShortUrlUpdate, ShortUrlPartialUpdate
 from pydantic import BaseModel
 
 
@@ -18,6 +18,26 @@ class ShortUrlStorage(BaseModel):
         self.slug_to_short_url[short_url.slug] = short_url
 
         return short_url
+
+    def update(
+            self, 
+        short_url: ShortUrl,
+        short_url_in: ShortUrlUpdate,
+    ):
+        for field_name, value in short_url_in:
+            setattr(short_url, field_name, value)
+        return short_url
+
+    def update_partial(
+            self,
+            short_url: ShortUrl,
+            short_url_in: ShortUrlPartialUpdate,
+        ):
+        new_data = short_url_in.model_dump(exclude_unset=True).items()
+        for field_name, value in new_data:
+            setattr(short_url, field_name, value)
+        return short_url
+
 
     def delete_by_slug(self, slug: str) -> None:
         self.slug_to_short_url.pop(slug, None)
