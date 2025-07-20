@@ -3,7 +3,7 @@ from typing import Annotated
 # from pydantic import AnyHttpUrl
 # from annotated_types import Len
 
-from api.api_v1.short_urls.schemas import ShortUrl, ShortUrlCreate, ShortUrlUpdate, ShortUrlPartialUpdate
+from api.api_v1.short_urls.schemas import ShortUrl, ShortUrlCreate, ShortUrlUpdate, ShortUrlPartialUpdate, ShortUrlRead
 from fastapi.responses import RedirectResponse
 from api.api_v1.short_urls.dependencies import prefetch_short_url, storage
 from fastapi import Request, HTTPException, status, Depends, APIRouter, Form
@@ -66,7 +66,7 @@ def update_short_url(
 
 @router.patch(
     "/",
-    response_model=ShortUrl,
+    response_model=ShortUrlRead,
 )
 def update_short_url_partial(
     url: ShortUrlBySlug,

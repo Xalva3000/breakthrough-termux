@@ -1,0 +1,5 @@
+{
+    "search": "{\"target_url\":\"http://google.com/\",\"slug\":\"search\",\"description\":\"\",\"visits\":42}",
+    "video": "{\"target_url\":\"http://rutube.ru/\",\"slug\":\"video\",\"description\":\"\",\"visits\":42}",
+    "string": "{\"target_url\":\"https://example.com/\",\"slug\":\"string\",\"description\":\"\",\"visits\":42}"
+}

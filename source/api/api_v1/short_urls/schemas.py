@@ -22,6 +22,7 @@ class ShortUrl(ShortUrlBase):
     """
     Основная модель ShortUrl
     """
+    visits: int = 42
 
 class ShortUrlCreate(ShortUrlBase):
     """
@@ -43,7 +44,7 @@ class ShortUrlPartialUpdate(ShortUrlBase):
 
 class ShortUrlRead(ShortUrlBase):
     """
-    Model for Out
+    Модель для вывода
     """
     slug: str
 
