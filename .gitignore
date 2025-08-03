@@ -1,3 +1,5 @@
+short_url_storage.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

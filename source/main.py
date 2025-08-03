@@ -13,6 +13,14 @@ from api import router as api_router
 from api.api_v1.short_urls.schemas import ShortUrl
 from api.api_v1.short_urls.dependencies import prefetch_short_url
 from typing import Annotated
+import logging
+from core import config
+
+
+logging.basicConfig(
+    level=config.LOG_LEVEL,
+)
+
 
 
 # Инициализация fastapi класса
