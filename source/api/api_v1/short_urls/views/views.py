@@ -5,11 +5,14 @@ from typing import Annotated
 
 from api.api_v1.short_urls.schemas import ShortUrl, ShortUrlCreate, ShortUrlRead
 # from fastapi.responses import RedirectResponse
-from api.api_v1.short_urls.dependencies import prefetch_short_url, storage
-from fastapi import Request, HTTPException, status, Depends, APIRouter, Form
+from api.api_v1.short_urls.dependencies import prefetch_short_url, storage, save_storage_state
+from fastapi import Request, HTTPException, status, Depends, APIRouter, Form, BackgroundTasks
 
 
-router = APIRouter(prefix="/short-urls")
+router = APIRouter(
+    prefix="/short-urls",
+    dependencies=[Depends(save_storage_state)]
+)
 
 
 @router.get(

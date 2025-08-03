@@ -5,7 +5,7 @@ from typing import Annotated
 
 from api.api_v1.short_urls.schemas import ShortUrl, ShortUrlCreate, ShortUrlUpdate, ShortUrlPartialUpdate, ShortUrlRead
 from fastapi.responses import RedirectResponse
-from api.api_v1.short_urls.dependencies import prefetch_short_url, storage
+from api.api_v1.short_urls.dependencies import prefetch_short_url, storage, save_storage_state
 from fastapi import Request, HTTPException, status, Depends, APIRouter, Form
 
 custom_responses={
@@ -23,7 +23,7 @@ custom_responses={
 
 router = APIRouter(
     prefix="/{slug}",
-    responses=custom_responses,
+    responses=custom_responses
 )
 
 ShortUrlBySlug = Annotated[

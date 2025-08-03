@@ -1,10 +1,6 @@
-from json import JSONDecodeError
-
 from .schemas import ShortUrl, ShortUrlCreate, ShortUrlUpdate, ShortUrlPartialUpdate
 from pydantic import BaseModel, ValidationError
 from core import SHORT_URL_STORAGE_PATH as SAVE_FILE
-import json
-import os
 import logging
 
 
@@ -13,6 +9,7 @@ logger = logging.getLogger(__name__)
 
 class ShortUrlStorage(BaseModel):
     slug_to_short_url: dict[str, ShortUrl] = {}
+
 
     def save_state(self):
         SAVE_FILE.write_text(self.model_dump_json(indent=2))
@@ -25,30 +22,17 @@ class ShortUrlStorage(BaseModel):
             return ShortUrlStorage()
         return cls.model_validate_json(SAVE_FILE.read_text())
 
-    # def __init__(self, **data):
-    #     super().__init__(**data)
-    #     self.slug_to_short_url = self._load_json_file()
+    def init_storage_from_state(self):
+        try:
+            data = ShortUrlStorage.from_state()
+        except ValidationError:
+            storage.save_state()
+            logger.warning("Storage file rewritten due to validation error.")
+            return
 
-    # def _load_json_file(self) -> dict[str, ShortUrl]:
-    #     data = {}
-    #     print(os.listdir())
-    #     if 'storage_short_url.json' in os.listdir():
-    #         try:
-    #             with open('storage_short_url.json', 'r', encoding='utf-8') as file:
-    #                 loaded_data = json.load(file)
-    #                 for slug, obj in loaded_data.items():
-    #                     data[slug] = ShortUrl.model_validate_json(obj)
-    #                 print(data)
-    #         except JSONDecodeError:
-    #             return data
-    #     return data
-
-    # def _save_to_file(self):
-    #     with open('storage_short_url.json', 'w', encoding='utf-8') as file:
-    #         print(self.slug_to_short_url.items())
-    #         data = {slug: url.model_dump_json() for slug, url in self.slug_to_short_url.items()}
-    #         print(data)
-    #         json.dump(data, file, ensure_ascii=False, indent=4)
+        self.slug_to_short_url.update(
+            data.slug_to_short_url,
+        )
 
     def get_all(self) -> list[ShortUrl]:
         logger.info("Getting short url list.")
@@ -66,7 +50,7 @@ class ShortUrlStorage(BaseModel):
 
         self.slug_to_short_url[short_url.slug] = short_url
         # self._save_to_file()
-        self.save_state()
+        # self.save_state()
 
         return short_url
 
@@ -106,37 +90,39 @@ class ShortUrlStorage(BaseModel):
     def delete(self, short_url: ShortUrl):
         self.delete_by_slug(short_url.slug)
 
-try:
-    storage = ShortUrlStorage.from_state()
-except ValidationError:
-    storage = ShortUrlStorage()
+    # def __init__(self, **data):
+    #     super().__init__(**data)
+    #     self.slug_to_short_url = self._load_json_file()
 
-# SHORT_URLS = [
-#     ShortUrl(
-#         target_url="http://google.com",
-#         slug="search",
-#     ),
-#     ShortUrl(
-#         target_url="http://rutube.ru",
-#         slug="video",
-#     ),
-# ]
+    # def _load_json_file(self) -> dict[str, ShortUrl]:
+    #     data = {}
+    #     print(os.listdir())
+    #     if 'storage_short_url.json' in os.listdir():
+    #         try:
+    #             with open('storage_short_url.json', 'r', encoding='utf-8') as file:
+    #                 loaded_data = json.load(file)
+    #                 for slug, obj in loaded_data.items():
+    #                     data[slug] = ShortUrl.model_validate_json(obj)
+    #                 print(data)
+    #         except JSONDecodeError:
+    #             return data
+    #     return data
 
-u1 = ShortUrlCreate(
-    target_url="http://google.com",
-    slug="search",
-)
+    # def _save_to_file(self):
+    #     with open('storage_short_url.json', 'w', encoding='utf-8') as file:
+    #         print(self.slug_to_short_url.items())
+    #         data = {slug: url.model_dump_json() for slug, url in self.slug_to_short_url.items()}
+    #         print(data)
+    #         json.dump(data, file, ensure_ascii=False, indent=4)
 
-u2 = ShortUrlCreate(
-    target_url="http://rutube.ru",
-    slug="video",
-)
 
-if u1.slug not in storage.slug_to_short_url:
-    storage.create(short_url_in=u1)
-    print("search url added")
-if u2.slug not in storage.slug_to_short_url:
-    storage.create(short_url_in=u2)
-    print("video url added")
+storage = ShortUrlStorage()
+# try:
+#     storage = ShortUrlStorage.from_state()
+# except ValidationError:
+#     storage = ShortUrlStorage()
+
+
+
 
 

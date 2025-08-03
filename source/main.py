@@ -15,6 +15,7 @@ from api.api_v1.short_urls.dependencies import prefetch_short_url
 from typing import Annotated
 import logging
 from core import config
+from app_lifespan import lifespan
 
 
 logging.basicConfig(
@@ -26,6 +27,7 @@ logging.basicConfig(
 # Инициализация fastapi класса
 app = FastAPI(
     title="Breakthrough",
+    lifespan=lifespan,
 )
 
 # Подключение всех роутеров
