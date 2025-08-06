@@ -1,12 +1,21 @@
 import logging
 
-from fastapi import HTTPException, BackgroundTasks
+from fastapi import HTTPException, BackgroundTasks, Request
 from starlette import status
 from .schemas import ShortUrl
 from .crud import storage
 
 
 logger = logging.getLogger(__name__)
+
+
+UNSAFE_METHODS = {
+        "PUT",
+        "PATCH",
+        "POST",
+        "UPDATE",
+        "DELETE",
+    }
 
 def prefetch_short_url(
         slug: str
@@ -24,8 +33,10 @@ def prefetch_short_url(
     )
 
 def save_storage_state(
+        request: Request,
         background_tasks: BackgroundTasks,
 ):
     yield
-    background_tasks.add_task(storage.save_state)
-    logger.info("Storage save state task is added to pool")
+    if request.method in UNSAFE_METHODS:
+        background_tasks.add_task(storage.save_state)
+        logger.info("Storage save state task is added to pool")
